@@ -71,7 +71,7 @@ Try {
             $remoteCollectorGroup               = $pnpWorkbook.Workbook.Names["mgmt_sddc_domain"].Value + "-remote-collectors"
 
             if ((Get-VCFvROPS).status -eq "ACTIVE") {
-                Write-LogMessage -Type INFO -Message "Configure Integration with vRealize Operations Manager" -Colour Green
+                Write-LogMessage -Type INFO -Message "Configure Integration with VMware Aria Operations" -Colour Green
 
                 # Add a VMware Identity Manager Adapter for the Standalone Workspace ONE Access Instance
                 Write-LogMessage -Type INFO -Message "Attempting to Add a VMware Identity Manager Adapter for the Standalone Workspace ONE Access Instance"
@@ -83,28 +83,28 @@ Try {
                 $StatusMsg = Add-vROPSAdapterPing -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -addressList $wsaIpList -adapterName $wsaAdapterName -collectorGroupName $remoteCollectorGroup -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             } else {
-                Write-LogMessage -Type INFO -Message "Configure Integration with vRealize Operations Manager, Not Installed: SKIPPED" -Colour Cyan
+                Write-LogMessage -Type INFO -Message "Configure Integration with VMware Aria Operations, Not Installed: SKIPPED" -Colour Cyan
             }
 
             if ((Get-VCFvRLI).status -eq "ACTIVE") {
-                Write-LogMessage -Type INFO -Message "Configure Integration with vRealize Log Insight" -Colour Green
+                Write-LogMessage -Type INFO -Message "Configure Integration with VMware Aria Operations for Logs" -Colour Green
 
-                # Install and Configure the vRealize Log Insight Agent on the Standalone Workspace ONE Access Appliance
-                Write-LogMessage -Type INFO -Message "Install and Configure the vRealize Log Insight Agent on the Standalone Workspace ONE Access Appliance"
+                # Install and Configure the VMware Aria Operations for Logs Agent on the Standalone Workspace ONE Access Appliance
+                Write-LogMessage -Type INFO -Message "Install and Configure the VMware Aria Operations for Logs Agent on the Standalone Workspace ONE Access Appliance"
                 $StatusMsg = Install-vRLIPhotonAgent -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -vmName $wsaVmName -vmRootPass $wsaRootPassword -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-                # Create a vRealize Log Insight Identity Manager Agent Group for the Standalone Workspace ONE Access
-                Write-LogMessage -Type INFO -Message "Create a vRealize Log Insight Identity Manager Agent Group for the Standalone Workspace ONE Access"
+                # Create a VMware Aria Operations for Logs Identity Manager Agent Group for the Standalone Workspace ONE Access
+                Write-LogMessage -Type INFO -Message "Create a VMware Aria Operations for Logs Identity Manager Agent Group for the Standalone Workspace ONE Access"
                 $StatusMsg = Add-vRLIAgentGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -agentGroupType wsa -agentGroupName $wsaAgentGroupName -criteria $vmList -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-                # Install and Configure the vRealize Log Insight Agent on the Standalone Workspace ONE Access Appliance
-                Write-LogMessage -Type INFO -Message "Install and Configure the vRealize Log Insight Agent on the Standalone Workspace ONE Access Appliance"
+                # Install and Configure the VMware Aria Operations for Logs Agent on the Standalone Workspace ONE Access Appliance
+                Write-LogMessage -Type INFO -Message "Install and Configure the VMware Aria Operations for Logs Agent on the Standalone Workspace ONE Access Appliance"
                 $StatusMsg = Add-vRLIAgentGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -agentGroupType wsa -agentGroupName $photonAgentGroupName -criteria $vmList -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             } else {
-                Write-LogMessage -Type INFO -Message "Configure Integration with vRealize Log Insight, Not Installed: SKIPPED" -Colour Cyan
+                Write-LogMessage -Type INFO -Message "Configure Integration with VMware Aria Operations for Logs, Not Installed: SKIPPED" -Colour Cyan
             }
         }
     }

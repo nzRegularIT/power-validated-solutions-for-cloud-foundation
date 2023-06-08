@@ -12,15 +12,15 @@
     ===================================================================================================================
     
     .SYNOPSIS
-    Deploy vRealize Automation for Private Cloud Automation
+    Deploy VMware Aria Automation for Private Cloud Automation
 
     .DESCRIPTION
-    The pcaDeployVrealizeAutomation.ps1 provides a single script to deploy and configure vRealize Automation as
+    The pcaDeployVrealizeAutomation.ps1 provides a single script to deploy and configure VMware Aria Automation as
     defined by the Private Cloud Automation for VMware Cloud Foundation validated solution.
 
     .EXAMPLE
     pcaDeployVrealizeAutomation.ps1 -sddcManagerFqdn sfo-vcf01.sfo.rainpole.io -sddcManagerUser administrator@vsphere.local -sddcManagerPass VMw@re1! -workbook F:\vvs\PnP.xlsx -filePath F:\vvs
-    This example performs the deployment and configure of vRealize Automation using the parameters provided within the Planning and Preparation Workbook
+    This example performs the deployment and configure of VMware Aria Automation using the parameters provided within the Planning and Preparation Workbook
 #>
 
 Param (
@@ -34,7 +34,7 @@ Param (
 Clear-Host; Write-Host ""
 
 Start-SetupLogFile -Path $filePath -ScriptName $MyInvocation.MyCommand.Name
-Write-LogMessage -Type INFO -Message "Starting the Process of Deploying vRealize Automation Based on Private Cloud Automation for VMware Cloud Foundation" -Colour Yellow
+Write-LogMessage -Type INFO -Message "Starting the Process of Deploying VMware Aria Automation Based on Private Cloud Automation for VMware Cloud Foundation" -Colour Yellow
 Write-LogMessage -Type INFO -Message "Setting up the log file to path $logfile"
 
 Try {
@@ -59,7 +59,7 @@ Try {
                 Break
             }
 
-            $licenseAlias                   = if ($pnpWorkbook.Workbook.Names["vrs_license"].Value) { "vRealize Suite 2019" } else { "vRealize Automation" }
+            $licenseAlias                   = if ($pnpWorkbook.Workbook.Names["vrs_license"].Value) { "VMware Aria Suite" } else { "VMware Aria Automation" }
             $licenseKey                     = if ($pnpWorkbook.Workbook.Names["vrs_license"].Value) { $pnpWorkbook.Workbook.Names["vrs_license"].Value } else { $pnpWorkbook.Workbook.Names["vra_license"].Value }
             $certificateAlias               = $pnpWorkbook.Workbook.Names["xreg_vra_virtual_hostname"].Value
             $rootPasswordAlias              = $pnpWorkbook.Workbook.Names["xreg_vra_root_password_alias"].Value
@@ -135,76 +135,76 @@ Try {
             $vroVsphereTemplate = ($filePath + "\" + "vro-vsphere-integration.role")
             if (!(Test-Path ($vroVsphereTemplate) )) { Write-LogMessage -Type ERROR -Message "Unable to Find vSphere Role Template: $vroVsphereTemplate, check details and try again" -Colour Red; Break } else { Write-LogMessage -Type INFO -Message "Found vSphere Role Template: $vroVsphereTemplate" }
 
-            # Add the vRealize Automation License to vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Attempting to Add the vRealize Automation License to vRealize Suite Lifecycle Manager"
+            # Add the VMware Aria Automation License to VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Attempting to Add the VMware Aria Automation License to VMware Aria Suite Lifecycle"
             $StatusMsg = New-vRSLCMLockerLicense -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $licenseAlias -license $licenseKey -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Import the Certificate for vRealize Automation to vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Attempting to Import the Certificate for vRealize Automation to vRealize Suite Lifecycle Manager"
+            # Import the Certificate for VMware Aria Automation to VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Attempting to Import the Certificate for VMware Aria Automation to VMware Aria Suite Lifecycle"
             $StatusMsg = Import-vRSLCMLockerCertificate -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -certificateAlias $certificateAlias -certChainPath ($filePath + "\" + $vraPem) -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Add the vRealize Automation Password to vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Attempting to Add the vRealize Automation Password to vRealize Suite Lifecycle Manager"
+            # Add the VMware Aria Automation Password to VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Attempting to Add the VMware Aria Automation Password to VMware Aria Suite Lifecycle"
             $StatusMsg = New-vRSLCMLockerPassword -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $rootPasswordAlias -password $rootPassword -userName $rootUserName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = New-vRSLCMLockerPassword -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $xintPasswordAlias -password $xintPassword -userName $xintUserName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Deploy vRealize Automation by Using vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Attempting to Deploy vRealize Automation by Using vRealize Suite Lifecycle Manager"
+            # Deploy VMware Aria Automation by Using VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Attempting to Deploy VMware Aria Automation by Using VMware Aria Suite Lifecycle"
             $StatusMsg = New-vRADeployment -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -workbook $workbook -monitor -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Create a Virtual Machine and Template Folder for the vRealize Automation Cluster Virtual Machines
-            Write-LogMessage -Type INFO -Message "Attempting to Create a Virtual Machine and Template Folder for the vRealize Automation Cluster Virtual Machines"
+            # Create a Virtual Machine and Template Folder for the VMware Aria Automation Cluster Virtual Machines
+            Write-LogMessage -Type INFO -Message "Attempting to Create a Virtual Machine and Template Folder for the VMware Aria Automation Cluster Virtual Machines"
             $StatusMsg = Add-VMFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -folderName $vraFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Move the vRealize Automation Cluster Virtual Machines to the Dedicated Folder
-            Write-LogMessage -Type INFO -Message "Attempting to Move the vRealize Automation Cluster Virtual Machines to the Dedicated Folder"
+            # Move the VMware Aria Automation Cluster Virtual Machines to the Dedicated Folder
+            Write-LogMessage -Type INFO -Message "Attempting to Move the VMware Aria Automation Cluster Virtual Machines to the Dedicated Folder"
             $StatusMsg = Move-VMtoFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -vmList $vraVmList -folder $vraFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
-            if ( $StatusMsg -match "SUCCESSFUL" ) { Write-LogMessage -Type INFO -Message "Relocating vRealize Automation Cluster Virtual Machines to Dedicated Folder: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
+            if ( $StatusMsg -match "SUCCESSFUL" ) { Write-LogMessage -Type INFO -Message "Relocating VMware Aria Automation Cluster Virtual Machines to Dedicated Folder: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Create a Virtual Machine and Template Folder and a Resource Pool for the vRealize Automation-Managed Workloads on the VI Workload Domain vCenter Server
-            Write-LogMessage -Type INFO -Message "Attempting to Create a Virtual Machine and Template Folder and a Resource Pool for the vRealize Automation-Managed Workloads on the VI Workload Domain vCenter Server"
+            # Create a Virtual Machine and Template Folder and a Resource Pool for the VMware Aria Automation-Managed Workloads on the VI Workload Domain vCenter Server
+            Write-LogMessage -Type INFO -Message "Attempting to Create a Virtual Machine and Template Folder and a Resource Pool for the VMware Aria Automation-Managed Workloads on the VI Workload Domain vCenter Server"
             $StatusMsg = Add-VMFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -folderName $workloadFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-ResourcePool -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -resourcePoolName $workloadResource -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Configure a vSphere DRS Anti-Affinity Rule for the vRealize Automation Cluster Virtual Machines
-            Write-LogMessage -Type INFO -Message "Attempting to Configure a vSphere DRS Anti-Affinity Rule for the vRealize Automation Cluster Virtual Machines"
+            # Configure a vSphere DRS Anti-Affinity Rule for the VMware Aria Automation Cluster Virtual Machines
+            Write-LogMessage -Type INFO -Message "Attempting to Configure a vSphere DRS Anti-Affinity Rule for the VMware Aria Automation Cluster Virtual Machines"
             $StatusMsg = Add-AntiAffinityRule -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $antiAffinityRuleName -antiAffinityVMs $antiAffinityVMs -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Create a VM Group and Define the Startup Order of the vRealize Automation Cluster Virtual Machines
-            Write-LogMessage -Type INFO -Message "Attempting to Create a VM Group and Define the Startup Order of the vRealize Automation Cluster Virtual Machines"
+            # Create a VM Group and Define the Startup Order of the VMware Aria Automation Cluster Virtual Machines
+            Write-LogMessage -Type INFO -Message "Attempting to Create a VM Group and Define the Startup Order of the VMware Aria Automation Cluster Virtual Machines"
             $StatusMsg = Add-ClusterGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -drsGroupName $drsGroupNameVra -drsGroupVMs $drsGroupVMs -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-VmStartupRule -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $ruleName -vmGroup  $drsGroupNameVra -dependOnVmGroup $drsGroupNameWsa -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
             if ($stretchedCluster -eq "Include") {
-                # Add the vRealize Automation Cluster Virtual Machines to the First Availability Zone VM Group
-                Write-LogMessage -Type INFO -Message "Attempting to Add the vRealize Automation Cluster Virtual Machines to the First Availability Zone VM Group"
+                # Add the VMware Aria Automation Cluster Virtual Machines to the First Availability Zone VM Group
+                Write-LogMessage -Type INFO -Message "Attempting to Add the VMware Aria Automation Cluster Virtual Machines to the First Availability Zone VM Group"
                 $StatusMsg = Add-VmGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -name $groupName -vmList $vraVmList -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             }
 
-            # Configure the Organization Name for vRealize Automation
-            Write-LogMessage -Type INFO -Message "Attempting to Configure the Organization Name for vRealize Automation"
+            # Configure the Organization Name for VMware Aria Automation
+            Write-LogMessage -Type INFO -Message "Attempting to Configure the Organization Name for VMware Aria Automation"
             $StatusMsg = Update-vRAOrganizationDisplayName -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -displayName $displayName -vraUser $vraUser -vraPass $vraPass -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Synchronize the Active Directory Groups for vRealize Automation in Workspace ONE Access
-            Write-LogMessage -Type INFO -Message "Attempting to Synchronize the Active Directory Groups for vRealize Automation in Workspace ONE Access"
+            # Synchronize the Active Directory Groups for VMware Aria Automation in Workspace ONE Access
+            Write-LogMessage -Type INFO -Message "Attempting to Synchronize the Active Directory Groups for VMware Aria Automation in Workspace ONE Access"
             $StatusMsg = Add-WorkspaceOneDirectoryGroup -server $wsaFqdn -user $wsaUser -pass $wsaPass -domain $domain -bindUser $bindUser -bindPass  $bindPass -baseDnGroup $baseDnGroup -adGroups $adGroups -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Assign Organization and Service Roles to the Groups for vRealize Automation
-            Write-LogMessage -Type INFO -Message "Attempting to Assign Organization and Service Roles to the Groups for vRealize Automation"
+            # Assign Organization and Service Roles to the Groups for VMware Aria Automation
+            Write-LogMessage -Type INFO -Message "Attempting to Assign Organization and Service Roles to the Groups for VMware Aria Automation"
             $StatusMsg = Add-vRAGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -vraUser $vraUser -vraPass $vraPass -displayName $orgOwner -orgRole org_owner -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-vRAGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -vraUser $vraUser -vraPass $vraPass -displayName $cloudAssemblyAdmins -orgRole org_member -serviceRole automationservice:cloud_admin -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
@@ -226,34 +226,34 @@ Try {
             $StatusMsg = Add-vRAGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -vraUser $vraUser -vraPass $vraPass -displayName $orchestratorViewers -orgRole org_member -serviceRole orchestration:viewer -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Define Custom Roles in vSphere for vRealize Automation and vRealize Orchestrator
-            Write-LogMessage -Type INFO -Message "Attempting to Define Custom Roles in vSphere for vRealize Automation and vRealize Orchestrator"
+            # Define Custom Roles in vSphere for VMware Aria Automation and VMware Aria Automation Orchestrator
+            Write-LogMessage -Type INFO -Message "Attempting to Define Custom Roles in vSphere for VMware Aria Automation and VMware Aria Automation Orchestrator"
             $StatusMsg = Add-vSphereRole -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -roleName $vraVsphereRoleName -template $vraVsphereTemplate -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-vSphereRole -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -roleName $vroVsphereRoleName -template $vroVsphereTemplate -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Configure Service Account Permissions for the vRealize Automation and vRealize Orchestrator Integrations to vSphere
-            Write-LogMessage -Type INFO -Message "Attempting to Configure Service Account Permissions for the vRealize Automation and vRealize Orchestrator Integrations to vSphere"
+            # Configure Service Account Permissions for the VMware Aria Automation and VMware Aria Automation Orchestrator Integrations to vSphere
+            Write-LogMessage -Type INFO -Message "Attempting to Configure Service Account Permissions for the VMware Aria Automation and VMware Aria Automation Orchestrator Integrations to vSphere"
             $StatusMsg = Add-vCenterGlobalPermission -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domain -domainBindUser $domainBindUser -domainBindPass $domainBindPass -principal $vraServiceAccount -role $vraVsphereRoleName -propagate true -type user -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red } 
             $StatusMsg = Add-vCenterGlobalPermission -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domain -domainBindUser $domainBindUser -domainBindPass $domainBindPass -principal $vroServiceAccount -role $vroVsphereRoleName -propagate true -type user -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             
-            # Restrict the vRealize Automation and vRealize Orchestrator Service Accounts Access to the Management Domain
-            Write-LogMessage -Type INFO -Message "Attempting to Restrict the vRealize Automation and vRealize Orchestrator Service Accounts Access to the Management Domain"
+            # Restrict the VMware Aria Automation and VMware Aria Automation Orchestrator Service Accounts Access to the Management Domain
+            Write-LogMessage -Type INFO -Message "Attempting to Restrict the VMware Aria Automation and VMware Aria Automation Orchestrator Service Accounts Access to the Management Domain"
             $StatusMsg = Set-vCenterPermission -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domainAlias -workloadDomain $sddcDomainName -principal $vraServiceAccount -role "NoAccess" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Set-vCenterPermission -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domainAlias -workloadDomain $sddcDomainName -principal $vroServiceAccount -role "NoAccess" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Create a Virtual Machine and Template Folder for the vRealize Automation Workload Virtual Machines
-            Write-LogMessage -Type INFO -Message "Attempting to Create a Virtual Machine and Template Folder for the vRealize Automation Workload Virtual Machines"
+            # Create a Virtual Machine and Template Folder for the VMware Aria Automation Workload Virtual Machines
+            Write-LogMessage -Type INFO -Message "Attempting to Create a Virtual Machine and Template Folder for the VMware Aria Automation Workload Virtual Machines"
             $StatusMsg = Add-VMFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -folderName $nsxEdgeVMFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
     
-            # Restrict the vRealize Automation and vRealize Orchestrator Service Accounts Access to Virtual Machine and Datastore Folders in the VI Workload Domain
-            Write-LogMessage -Type INFO -Message "Attempting to Restrict the vRealize Automation and vRealize Orchestrator Service Accounts Access to Virtual Machine and Datastore Folders in the VI Workload Domain"
+            # Restrict the VMware Aria Automation and VMware Aria Automation Orchestrator Service Accounts Access to Virtual Machine and Datastore Folders in the VI Workload Domain
+            Write-LogMessage -Type INFO -Message "Attempting to Restrict the VMware Aria Automation and VMware Aria Automation Orchestrator Service Accounts Access to Virtual Machine and Datastore Folders in the VI Workload Domain"
             $StatusMsg = Set-vCenterPermission -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domainAlias -workloadDomain $sddcWldDomainName -principal $vraServiceAccount -role "NoAccess" -folderName $nsxEdgeVMFolder -folderType "VM" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Set-vCenterPermission -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domainAlias -workloadDomain $sddcWldDomainName -principal $vraServiceAccount -role "NoAccess" -folderName $localDatastoreFolder -folderType "Datastore" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
@@ -267,33 +267,33 @@ Try {
             $StatusMsg = Set-vCenterPermission -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domainAlias -workloadDomain $sddcWldDomainName -principal $vroServiceAccount -role "NoAccess" -folderName $readOnlyDatastoreFolder -folderType "Datastore" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Configure Service Account Permissions for the vRealize Automation to NSX-T Data Center Integration on the VI Workload Domain NSX Manager Cluster
-            Write-LogMessage -Type INFO -Message "Attempting to Configure Service Account Permissions for the vRealize Automation to NSX-T Data Center Integration on the VI Workload Domain NSX Manager Cluster"
+            # Configure Service Account Permissions for the VMware Aria Automation to NSX-T Data Center Integration on the VI Workload Domain NSX Manager Cluster
+            Write-LogMessage -Type INFO -Message "Attempting to Configure Service Account Permissions for the VMware Aria Automation to NSX-T Data Center Integration on the VI Workload Domain NSX Manager Cluster"
             $StatusMsg = Add-NsxtVidmRole -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -type user -principal $nsxVraUser -role enterprise_admin -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Add Cloud Accounts for the VI Workload Domains to vRealize Automation
-            Write-LogMessage -Type INFO -Message "Attempting to Add Cloud Accounts for the VI Workload Domains to vRealize Automation"
+            # Add Cloud Accounts for the VI Workload Domains to VMware Aria Automation
+            Write-LogMessage -Type INFO -Message "Attempting to Add Cloud Accounts for the VI Workload Domains to VMware Aria Automation"
             $StatusMsg = New-vRACloudAccount -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -vraUser $vraUser -vraPass $vraPass -capabilityTab $capabilityTag -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Configure the Cloud Zones in vRealize Automation
-            Write-LogMessage -Type INFO -Message "Attempting to Configure the Cloud Zones in vRealize Automation"
+            # Configure the Cloud Zones in VMware Aria Automation
+            Write-LogMessage -Type INFO -Message "Attempting to Configure the Cloud Zones in VMware Aria Automation"
             $StatusMsg = Update-vRACloudAccountZone -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -vraUser $vraUser -vraPass $vraPass -tagKey $tagKey -tagValue $tagValue -folder $workloadFolder -resourcePool $workloadResource -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Configure Email Alerts in Service Broker
-            Write-LogMessage -Type INFO -Message "Attempting to Configure Email Alerts in Service Broker"
+            # Configure Email Alerts in VMware Aria Automation Service Broker
+            Write-LogMessage -Type INFO -Message "Attempting to Configure Email Alerts in VMware Aria Automation Service Broker"
             $StatusMsg = Add-vRANotification -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -vraUser $vraUser -vraPass $vraPass -smtpServer $smtpServer -emailAddress $emailAddress -sender $senderName -connection NONE -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Import the Trusted Certificate into vRealize Orchestrator
-            Write-LogMessage -Type INFO -Message "Attempting to Import the Trusted Certificates into vRealize Orchestrator"
+            # Import the Trusted Certificate into VMware Aria Automation Orchestrator
+            Write-LogMessage -Type INFO -Message "Attempting to Import the Trusted Certificates into VMware Aria Automation Orchestrator"
             $StatusMsg = Add-vROTrustedCertificate -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -vraUser $vraUser -vraPass $vraPass -certFile ($filePath + "\" + $rootCer) -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             
-            # Add the VI Workload Domain vCenter Server to vRealize Orchestrator
-            Write-LogMessage -Type INFO -Message "Attempting to Add the VI Workload Domain vCenter Server to vRealize Orchestrator"
+            # Add the VI Workload Domain vCenter Server to VMware Aria Automation Orchestrator
+            Write-LogMessage -Type INFO -Message "Attempting to Add the VI Workload Domain vCenter Server to VMware Aria Automation Orchestrator"
             $StatusMsg = Add-vROvCenterServer -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -vraUser $vraUser -vraPass $vraPass -vcUser $vcUser -vcPass $vcPass -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
         }

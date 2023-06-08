@@ -16,6 +16,14 @@
 - Enhanced `Get-LocalPasswordComplexity` to handle VMware Cloud Foundation version parameter.
 - Enhanced `Get-LocalAccountLockout` to handle VMware Cloud Foundation version parameter.
 - Enhanced `Set-NsxtManagerAuthPolicy` cmdlet to handle `hash_algorithm` parameter for NSX 4.x.
+- Updated the product names for VMware Aria Suite, formerly vRealize Suite, in cmdlet descriptions, examples, comments, and messages.
+  > Note: No changes to cmdlet names or parameters.
+  - VMware Aria Suite Lifecycle, formerly vRealize Suite Lifecycle Manager.
+  - VMware Aria Operations, formerly vRealize Operations.
+  - VMware Aria Operations for Logs, formerly vRealize Log Insight.
+  - VMware Aria Automation, formerly vRealize Automation.
+  - VMware Aria Automation Service Broker, formerly Service Broker.
+  - VMware Aria Automation Orchestrator, formerly vRealize Orchestrator.
 
 ## v2.3.0 (2023-05-30)
 

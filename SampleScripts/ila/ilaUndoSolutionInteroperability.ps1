@@ -62,19 +62,19 @@ Try {
             $vrliAdapterName                    = $pnpWorkbook.Workbook.Names["region_vrli_virtual_hostname"].Value + "-cluster"
 
             if ((Get-VCFvROPS).status -eq "ACTIVE") {
-                Write-LogMessage -Type INFO -Message "Remove Integration with vRealize Operations Manager"
+                Write-LogMessage -Type INFO -Message "Remove Integration with VMware Aria Operations"
 
-                # Reconfigure the Default Collector Group for the vRealize Log Insight Integration
-                Write-LogMessage -Type INFO -Message "Attempting to Reconfigure the Default Collector Group for the vRealize Log Insight Integration"
+                # Reconfigure the Default Collector Group for the VMware Aria Operations for Logs Integration
+                Write-LogMessage -Type INFO -Message "Attempting to Reconfigure the Default Collector Group for the VMware Aria Operations for Logs Integration"
                 $StatusMsg = Update-vROPSAdapterCollecterGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -adapterType "LogInsightAdapter" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
                 
-                # Remove the Ping Adapter for the vRealize Log Insight Cluster
-                Write-LogMessage -Type INFO -Message "Attempting to Remove the Ping Adapter for the vRealize Log Insight Cluster"
+                # Remove the Ping Adapter for the VMware Aria Operations for Logs Cluster
+                Write-LogMessage -Type INFO -Message "Attempting to Remove the Ping Adapter for the VMware Aria Operations for Logs Cluster"
                 $StatusMsg = Undo-vROPSAdapter -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -adapterName $vrliAdapterName -adapterType PingAdapter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             } else {
-                Write-LogMessage -Type INFO -Message "Remove Integration with vRealize Operations Manager, Not Installed: SKIPPED" -Colour Cyan
+                Write-LogMessage -Type INFO -Message "Remove Integration with VMware Aria Operations, Not Installed: SKIPPED" -Colour Cyan
             }
         }
     }

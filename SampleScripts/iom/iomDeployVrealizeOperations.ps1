@@ -13,19 +13,19 @@
     ===================================================================================================================
 
     .SYNOPSIS
-    Deploy vRealize Operations Manager for Intelligent Operations Management
+    Deploy VMware Aria Operations for Intelligent Operations Management
 
     .DESCRIPTION
-    The iomDeployVrealizeOperations.ps1 provides a single script to deploy and configure vRealize Operations Manager
+    The iomDeployVrealizeOperations.ps1 provides a single script to deploy and configure VMware Aria Operations
     as defined by the Intelligent Operations Management Validated Solution
 
     .EXAMPLE
     iomDeployVrealizeOperations.ps1 -sddcManagerFqdn sfo-vcf01.sfo.rainpole.io -sddcManagerUser administrator@vsphere.local -sddcManagerPass VMw@re1! -workbook F:\vvs\PnP.xlsx -filePath F:\vvs
-    This example performs the deployment and configure of vRealize Operations Manager using the parameters provided within the Planning and Preparation Workbook
+    This example performs the deployment and configure of VMware Aria Operations using the parameters provided within the Planning and Preparation Workbook
 
     .EXAMPLE
     iomDeployVrealizeOperations.ps1 -sddcManagerFqdn sfo-vcf01.sfo.rainpole.io -sddcManagerUser administrator@vsphere.local -sddcManagerPass VMw@re1! -workbook F:\vvs\PnP.xlsx -filePath F:\vvs -nested
-    This example performs a minimal footprint deployment and configuration of vRealize Operations Manager using the parameters provided within the Planning and Preparation Workbook
+    This example performs a minimal footprint deployment and configuration of VMware Aria Operations using the parameters provided within the Planning and Preparation Workbook
 #>
 
 Param (
@@ -40,7 +40,7 @@ Param (
 Clear-Host; Write-Host ""
 
 Start-SetupLogFile -Path $filePath -ScriptName $MyInvocation.MyCommand.Name
-Write-LogMessage -Type INFO -Message "Starting the Process of Configuring vRealize Operations Manager Based on Intelligent Operations Management for VMware Cloud Foundation" -Colour Yellow
+Write-LogMessage -Type INFO -Message "Starting the Process of Configuring VMware Aria Operations Based on Intelligent Operations Management for VMware Cloud Foundation" -Colour Yellow
 Write-LogMessage -Type INFO -Message "Setting up the log file to path $logfile"
 
 Try {
@@ -61,12 +61,12 @@ Try {
             $pnpWorkbook = Open-ExcelPackage -Path $Workbook
             Write-LogMessage -type INFO -message "Checking Valid Planning and Preparation Workbook Provided"
             if (($pnpWorkbook.Workbook.Names["vcf_version"].Value -ne "v4.3.x") -and ($pnpWorkbook.Workbook.Names["vcf_version"].Value -ne "v4.4.x") -and ($pnpWorkbook.Workbook.Names["vcf_version"].Value -ne "v4.5.x")) {
-                Write-LogMessage -type INFO -message "Planning and Preparation Workbook Provided Not Supported" -colour Red 
+                Write-LogMessage -type INFO -message "Planning and Preparation Workbook Provided Not Supported" -colour Red
                 Break
             }
 
             $sddcDomainName                         = $pnpWorkbook.Workbook.Names["mgmt_sddc_domain"].Value
-            $licenseAlias                           =  if ($pnpWorkbook.Workbook.Names["vrs_license"].Value) {  "vRealize Suite 2019" } else { "vRealize Operations Manager" }
+            $licenseAlias                           =  if ($pnpWorkbook.Workbook.Names["vrs_license"].Value) {  "VMware Aria Suite" } else { "VMware Aria Operations" }
             $licenseKey                             =  if ($pnpWorkbook.Workbook.Names["vrs_license"].Value) { $pnpWorkbook.Workbook.Names["vrs_license"].Value } else { $pnpWorkbook.Workbook.Names["vrops_license"].Value }
             $certificateAlias                       = $pnpWorkbook.Workbook.Names["xreg_vrops_virtual_hostname"].Value
             $rootPasswordAlias                      = $pnpWorkbook.Workbook.Names["xreg_vrops_root_password_alias"].Value
@@ -115,89 +115,89 @@ Try {
             $vropsReadOnlyGroup                     = $pnpWorkbook.Workbook.Names["group_gg_vrops_read_only"].Value
             $vropsPem                               = $certificateAlias + ".2.chain.pem"
             if (!(Test-Path ($filePath + "\" + $vropsPem) )) { Write-LogMessage -Type ERROR -Message "Unable to Find Certificate File: $vropsPem, check details and try again" -Colour Red; Break } else { Write-LogMessage -Type INFO -Message "Found Certificate File: $vropsPem" }
-        
-            # Add the vRealize Operations Manager License to vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Add the vRealize Operations Manager License to vRealize Suite Lifecycle Manager"
+
+            # Add the VMware Aria Operations License to VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Add the VMware Aria Operations License to VMware Aria Suite Lifecycle"
             $StatusMsg = New-vRSLCMLockerLicense -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $licenseAlias -license $licenseKey -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Import the Certificate for vRealize Operations Manager to vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Import the Certificate for vRealize Operations Manager to vRealize Suite Lifecycle Manager"
+            # Import the Certificate for VMware Aria Operations to VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Import the Certificate for VMware Aria Operations to VMware Aria Suite Lifecycle"
             $StatusMsg = Import-vRSLCMLockerCertificate -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -certificateAlias $certificateAlias -certChainPath ($filePath + "\" + $vropsPem) -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Add the vRealize Operations Manager Password to vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Add the vRealize Operations Manager Password to vRealize Suite Lifecycle Manager"
+            # Add the VMware Aria Operations Password to VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Add the VMware Aria Operations Password to VMware Aria Suite Lifecycle"
             $StatusMsg = New-vRSLCMLockerPassword -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $rootPasswordAlias -password $rootPassword -userName $rootUserName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = New-vRSLCMLockerPassword -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $xintPasswordAlias -password $xintPassword -userName $xintUserName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Deploy vRealize Operations Manager by Using vRealize Suite Lifecycle Manager
+            # Deploy VMware Aria Operations by Using VMware Aria Suite Lifecycle
             if (!$PsBoundParameters.ContainsKey("nested")) {
-                Write-LogMessage -Type INFO -Message "Deploy vRealize Operations Manager by Using vRealize Suite Lifecycle Manager"
+                Write-LogMessage -Type INFO -Message "Deploy VMware Aria Operations by Using VMware Aria Suite Lifecycle"
                 $StatusMsg = New-vROPSDeployment -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -workbook $workbook -monitor -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg -contains "FAILED" ) { Write-LogMessage -Type ERROR -Message "$StatusMsg"; Break } else { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             } else {
-                Write-LogMessage -Type INFO -Message "Deploy vRealize Operations Manager by Using vRealize Suite Lifecycle Manager"
+                Write-LogMessage -Type INFO -Message "Deploy VMware Aria Operations by Using VMware Aria Suite Lifecycle"
                 $StatusMsg = New-vROPSDeployment -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -workbook $workbook -monitor -nested -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg -contains "FAILED" ) { Write-LogMessage -Type ERROR -Message "$StatusMsg"; Break } else { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             }
 
-            # Create Virtual Machine and Template Folders for the vRealize Operations Manager Virtual Machines
-            Write-LogMessage -Type INFO -Message "Create Virtual Machine and Template Folders for the vRealize Operations Manager Virtual Machines"
+            # Create Virtual Machine and Template Folders for the VMware Aria Operations Virtual Machines
+            Write-LogMessage -Type INFO -Message "Create Virtual Machine and Template Folders for the VMware Aria Operations Virtual Machines"
             $StatusMsg = Add-VMFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -folderName $vropsFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-VMFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -folderName $vropsrcFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Move the vRealize Operations Manager Virtual Machines to the Dedicated Folders
-            Write-LogMessage -Type INFO -Message "Move the vRealize Operations Manager Virtual Machines to the Dedicated Folders"
+            # Move the VMware Aria Operations Virtual Machines to the Dedicated Folders
+            Write-LogMessage -Type INFO -Message "Move the VMware Aria Operations Virtual Machines to the Dedicated Folders"
             $StatusMsg = Move-VMtoFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -vmList $vropsVmList -folder $vropsFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
-            if ( $StatusMsg -match "SUCCESSFUL") { Write-LogMessage -Type INFO -Message "Relocating vRealize Operations Manager Cluster Virtual Machines to Dedicated Folder: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
+            if ( $StatusMsg -match "SUCCESSFUL") { Write-LogMessage -Type INFO -Message "Relocating VMware Aria Operations Cluster Virtual Machines to Dedicated Folder: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Move-VMtoFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -vmList $vropsrcVmList -folder $vropsrcFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
-            if ( $StatusMsg -match "SUCCESSFUL") { Write-LogMessage -Type INFO -Message "Relocating vRealize Operations Manager Remote Collector Virtual Machines to Dedicated Folder: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
+            if ( $StatusMsg -match "SUCCESSFUL") { Write-LogMessage -Type INFO -Message "Relocating VMware Aria Operations Remote Collector Virtual Machines to Dedicated Folder: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Configure vSphere DRS Anti-Affinity Rules for the vRealize Operations Manager Virtual Machines
-            Write-LogMessage -Type INFO -Message "Configure vSphere DRS Anti-Affinity Rules for the vRealize Operations Manager Virtual Machines"
+            # Configure vSphere DRS Anti-Affinity Rules for the VMware Aria Operations Virtual Machines
+            Write-LogMessage -Type INFO -Message "Configure vSphere DRS Anti-Affinity Rules for the VMware Aria Operations Virtual Machines"
             $StatusMsg = Add-AntiAffinityRule -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $vropsAntiAffinityRuleName -antiAffinityVMs $vropsAntiAffinityVMs -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-AntiAffinityRule -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $vropsrcAntiAffinityRuleName -antiAffinityVMs $vropsrcAntiAffinityVMs -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Create a VM Group and Define the Startup Order of the vRealize Operations Manager Analytics Cluster Virtual Machines
-            Write-LogMessage -Type INFO -Message "Create a VM Group and Define the Startup Order of the vRealize Operations Manager Analytics Cluster Virtual Machines"
+            # Create a VM Group and Define the Startup Order of the VMware Aria Operations Analytics Cluster Virtual Machines
+            Write-LogMessage -Type INFO -Message "Create a VM Group and Define the Startup Order of the VMware Aria Operations Analytics Cluster Virtual Machines"
             $StatusMsg = Add-ClusterGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -drsGroupName $drsGroupNameVrops -drsGroupVMs $drsGroupVMsVrops -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-VmStartupRule -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $ruleNameVrops -vmGroup $drsGroupNameVrops -dependOnVmGroup $drsGroupNameWsa -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Create a VM Group and Define the Startup Order of the vRealize Operations Manager Remote Collector Virtual Machines
-            Write-LogMessage -Type INFO -Message "Create a VM Group and Define the Startup Order of the vRealize Operations Manager Remote Collector Virtual Machines"
+            # Create a VM Group and Define the Startup Order of the VMware Aria Operations Remote Collector Virtual Machines
+            Write-LogMessage -Type INFO -Message "Create a VM Group and Define the Startup Order of the VMware Aria Operations Remote Collector Virtual Machines"
             $StatusMsg = Add-ClusterGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -drsGroupName $drsGroupNameVropsrc -drsGroupVMs $drsGroupVMsVropsrc -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-VmStartupRule -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $ruleNameVropsrc -vmGroup $drsGroupNameVropsrc -dependOnVmGroup $drsGroupNameVrops -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
             if ($stretchedCluster -eq "Include") {
-                # Add the vRealize Operations Manager Virtual Machines to the First Availability Zone VM Group
-                Write-LogMessage -Type INFO -Message "Add the vRealize Operations Manager Virtual Machines to the First Availability Zone VM Group"
+                # Add the VMware Aria Operations Virtual Machines to the First Availability Zone VM Group
+                Write-LogMessage -Type INFO -Message "Add the VMware Aria Operations Virtual Machines to the First Availability Zone VM Group"
                 $StatusMsg = Add-VmGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -name $groupName -vmList $vmList -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             }
 
-            # Group the vRealize Operations Manager Remote Collector Nodes
-            Write-LogMessage -Type INFO -Message "Group the vRealize Operations Manager Remote Collector Nodes"
+            # Group the VMware Aria Operations Remote Collector Nodes
+            Write-LogMessage -Type INFO -Message "Group the VMware Aria Operations Remote Collector Nodes"
             $StatusMsg = Add-vROPSGroupRemoteCollectors -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -collectorGroupName $collectorGroupName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Synchronize the Active Directory Groups for vRealize Operations Manager in Workspace ONE Access 
-            Write-LogMessage -Type INFO -Message "Synchronize the Active Directory Groups for vRealize Operations Manager in Workspace ONE Access"
+            # Synchronize the Active Directory Groups for VMware Aria Operations in Workspace ONE Access
+            Write-LogMessage -Type INFO -Message "Synchronize the Active Directory Groups for VMware Aria Operations in Workspace ONE Access"
             $StatusMsg = Add-WorkspaceOneDirectoryGroup -server $wsaFqdn -user $wsaUser -pass $wsaPass -domain $domain -bindUser $bindUser -bindPass  $bindPass -baseDnGroup $baseDnGroup -adGroups $adGroups -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Configure User Access in vRealize Operations Manager
-            Write-LogMessage -Type INFO -Message "Configure User Access in vRealize Operations Manager"
+            # Configure User Access in VMware Aria Operations
+            Write-LogMessage -Type INFO -Message "Configure User Access in VMware Aria Operations"
             $StatusMsg = Import-vROPSUserGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domain -groupName $vropsAdminGroup -role Administrator -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Import-vROPSUserGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domain -groupName $vropsContentAdminGroup -role ContentAdmin -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
@@ -205,15 +205,15 @@ Try {
             $StatusMsg = Import-vROPSUserGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domain -groupName $vropsReadOnlyGroup -role ReadOnly -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Set the Currency for Cost Calculation in vRealize Operations Manager
-            Write-LogMessage -Type INFO -Message "Set the Currency for Cost Calculation in vRealize Operations Manager"
+            # Set the Currency for Cost Calculation in VMware Aria Operations
+            Write-LogMessage -Type INFO -Message "Set the Currency for Cost Calculation in VMware Aria Operations"
             $StatusMsg = Add-vROPSCurrency -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -currency $currency -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
-            
-            # Configure Email Alert Plug-in Settings for vRealize Operations Manager
-            Write-LogMessage -Type INFO -Message "Configure Email Alert Plug-in Settings for vRealize Operations Manager"
+
+            # Configure Email Alert Plug-in Settings for VMware Aria Operations
+            Write-LogMessage -Type INFO -Message "Configure Email Alert Plug-in Settings for VMware Aria Operations"
             $StatusMsg = Add-vROPSAlertPluginEmail -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -pluginName "Email-Alert-Plugin" -smtpServer $smtpServer -smtpPort $smtpPort -senderAddress $senderAddress -secureConnection true -protocol TLS -authentication false -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
-            if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red } 
+            if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
         }
     }
 }

@@ -63,14 +63,14 @@ Try {
             $vmList                             = $pnpWorkbook.Workbook.Names["xreg_vrops_nodea_fqdn"].Value,$pnpWorkbook.Workbook.Names["xreg_vrops_nodeb_fqdn"].Value,$pnpWorkbook.Workbook.Names["xreg_vrops_nodec_fqdn"].Value ,$pnpWorkbook.Workbook.Names["region_vropsca_fqdn"].Value,$pnpWorkbook.Workbook.Names["region_vropscb_fqdn"].Value
 
             if ((Get-VCFvRLI).status -eq "ACTIVE") {
-                Write-LogMessage -Type INFO -Message "Configure Integration with vRealize Log Insight" -Colour Green
+                Write-LogMessage -Type INFO -Message "Configure Integration with VMware Aria Operations for Logs" -Colour Green
 
-                # Create a vRealize Log Insight Photon OS Agent Group for the vRealize Operations Manager Nodes
-                Write-LogMessage -Type INFO -Message "Attempting to Create a vRealize Log Insight Photon OS Agent Group for the vRealize Operations Manager Nodes"
+                # Create a VMware Aria Operations for Logs Photon OS Agent Group for the VMware Aria Operations Nodes
+                Write-LogMessage -Type INFO -Message "Attempting to Create a VMware Aria Operations for Logs Photon OS Agent Group for the VMware Aria Operations Nodes"
                 $StatusMsg = Add-vRLIAgentGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -agentGroupType photon -agentGroupName $agentGroupName -criteria $vmList -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             } else {
-                Write-LogMessage -Type INFO -Message "Configure Integration with vRealize Log Insight, Not Installed: SKIPPED" -Colour Cyan
+                Write-LogMessage -Type INFO -Message "Configure Integration with VMware Aria Operations for Logs, Not Installed: SKIPPED" -Colour Cyan
             }
         }
     }

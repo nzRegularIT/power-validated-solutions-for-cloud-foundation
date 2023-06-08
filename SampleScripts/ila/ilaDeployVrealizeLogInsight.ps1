@@ -19,15 +19,15 @@
     ===================================================================================================================
 
     .SYNOPSIS
-    Deploy vRealize Log Insight for Intelligent Logging and Analytics
+    Deploy VMware Aria Operations for Logs for Intelligent Logging and Analytics
 
     .DESCRIPTION
-    The ilaDeployVrealizeLogInsight.ps1 provides a single script to deploy and configure vRealize Log Insight as
+    The ilaDeployVrealizeLogInsight.ps1 provides a single script to deploy and configure VMware Aria Operations for Logs as
     defined by the Intelligent Logging and Analytics Validated Solution
 
     .EXAMPLE
     ilaDeployVrealizeLogInsight.ps1 -sddcManagerFqdn sfo-vcf01.sfo.rainpole.io -sddcManagerUser administrator@vsphere.local -sddcManagerPass VMw@re1! -workbook F:\vvs\PnP.xlsx -filePath F:\vvs
-    This example performs the deployment and configure of vRealize Log Insight using the parameters provided within the Planning and Preparation Workbook
+    This example performs the deployment and configure of VMware Aria Operations for Logs using the parameters provided within the Planning and Preparation Workbook
 #>
 
 Param (
@@ -41,7 +41,7 @@ Param (
 Clear-Host; Write-Host ""
 
 Start-SetupLogFile -Path $filePath -ScriptName $MyInvocation.MyCommand.Name
-Write-LogMessage -Type INFO -Message "Starting the Process of Configuring vRealize Log Insight Based on Intelligent Logging and Analytics for VMware Cloud Foundation" -Colour Yellow
+Write-LogMessage -Type INFO -Message "Starting the Process of Configuring VMware Aria Operations for Logs Based on Intelligent Logging and Analytics for VMware Cloud Foundation" -Colour Yellow
 Write-LogMessage -Type INFO -Message "Setting up the log file to path $logfile"
 
 Try {
@@ -67,7 +67,7 @@ Try {
             }
 
             $sddcDomainName                         = $pnpWorkbook.Workbook.Names["mgmt_sddc_domain"].Value
-            $licenseAlias                           =  "vRealize Log Insight"
+            $licenseAlias                           =  "VMware Aria Operations for Logs"
             $licenseKey                             =  if ($pnpWorkbook.Workbook.Names["vrs_license"].Value) { $pnpWorkbook.Workbook.Names["vrs_license"].Value } else { $pnpWorkbook.Workbook.Names["vrli_license"].Value }
             $certificateAlias                       = $pnpWorkbook.Workbook.Names["region_vrli_virtual_hostname"].Value
             $passwordAlias                          = $pnpWorkbook.Workbook.Names["region_vrli_admin_password_alias"].Value
@@ -109,69 +109,69 @@ Try {
             $vrliPem                                = $certificateAlias + ".2.chain.pem"
             if (!(Test-Path ($filePath + "\" + $vrliPem) )) { Write-LogMessage -Type ERROR -Message "Unable to Find Certificate File: $vrliPem, check details and try again" -Colour Red; Break } else { Write-LogMessage -Type INFO -Message "Found Certificate File: $vrliPem" }
 
-            # Add vRealize Log Insight License to vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Add the vRealize Log Insight License to vRealize Suite Lifecycle Manager"
+            # Add VMware Aria Operations for Logs License to VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Add the VMware Aria Operations for Logs License to VMware Aria Suite Lifecycle"
             $StatusMsg = New-vRSLCMLockerLicense -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $licenseAlias -license $licenseKey -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Import the vRealize Log Insight Certificate to vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Import the vRealize Log Insight Certificate to vRealize Suite Lifecycle Manager"
+            # Import the VMware Aria Operations for Logs Certificate to VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Import the VMware Aria Operations for Logs Certificate to VMware Aria Suite Lifecycle"
             $StatusMsg = Import-vRSLCMLockerCertificate -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -certificateAlias $certificateAlias -certChainPath ($filePath + "\" + $vrliPem) -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Add the vRealize Log Insight Admin Password to vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Add the vRealize Log Insight Admin Password to vRealize Suite Lifecycle Manager"
+            # Add the VMware Aria Operations for Logs Admin Password to VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Add the VMware Aria Operations for Logs Admin Password to VMware Aria Suite Lifecycle"
             $StatusMsg = New-vRSLCMLockerPassword -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $passwordAlias -password $password -userName $userName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Deploy vRealize Log Insight by Using vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Deploy vRealize Log Insight by Using vRealize Suite Lifecycle Manager"
+            # Deploy VMware Aria Operations for Logs by Using VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Deploy VMware Aria Operations for Logs by Using VMware Aria Suite Lifecycle"
             $StatusMsg = New-vRLIDeployment -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -workbook $workbook -monitor -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Create Virtual Machine and Template Folder for vRealize Log Insight
-            Write-LogMessage -Type INFO -Message "Create Virtual Machine and Template Folder for vRealize Log Insight"
+            # Create Virtual Machine and Template Folder for VMware Aria Operations for Logs
+            Write-LogMessage -Type INFO -Message "Create Virtual Machine and Template Folder for VMware Aria Operations for Logs"
             $StatusMsg = Add-VMFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -folderName $vrliFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Move the vRealize Log Insight Virtual Machines to the Dedicated Folder
-            Write-LogMessage -Type INFO -Message "Move the vRealize Log Insight Virtual Machines to the Dedicated Folder"
+            # Move the VMware Aria Operations for Logs Virtual Machines to the Dedicated Folder
+            Write-LogMessage -Type INFO -Message "Move the VMware Aria Operations for Logs Virtual Machines to the Dedicated Folder"
             $StatusMsg = Move-VMtoFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -vmList $vrliVmList -folder $vrliFolder -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
-            if ( $StatusMsg -match "SUCCESSFUL" ) { Write-LogMessage -Type INFO -Message "Relocating vRealize Log Insight Cluster Virtual Machines to Dedicated Folder: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
+            if ( $StatusMsg -match "SUCCESSFUL" ) { Write-LogMessage -Type INFO -Message "Relocating VMware Aria Operations for Logs Cluster Virtual Machines to Dedicated Folder: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Configure a vSphere DRS Anti-Affinity Rule for vRealize Log Insight
-            Write-LogMessage -Type INFO -Message "Configure a vSphere DRS Anti-Affinity Rule for vRealize Log Insight"
+            # Configure a vSphere DRS Anti-Affinity Rule for VMware Aria Operations for Logs
+            Write-LogMessage -Type INFO -Message "Configure a vSphere DRS Anti-Affinity Rule for VMware Aria Operations for Logs"
             $StatusMsg = Add-AntiAffinityRule -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $antiAffinityRuleName -antiAffinityVMs $antiAffinityVMs -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Create a VM Group and Define the Startup Order of the vRealize Log Insight Cluster
-            Write-LogMessage -Type INFO -Message "Create a VM Group and Define the Startup Order of the vRealize Log Insight Cluster"
+            # Create a VM Group and Define the Startup Order of the VMware Aria Operations for Logs Cluster
+            Write-LogMessage -Type INFO -Message "Create a VM Group and Define the Startup Order of the VMware Aria Operations for Logs Cluster"
             $StatusMsg = Add-ClusterGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -drsGroupName $drsGroupNameVrli -drsGroupVMs $drsGroupVMs -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-VmStartupRule -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $ruleName -vmGroup $drsGroupNameVrli -dependOnVmGroup $drsGroupNameWsa -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
             if ($stretchedCluster -eq "Include") {
-                # Add the vRealize Log Insight Virtual Machines to the First Availability Zone VM Group
-                Write-LogMessage -Type INFO -Message "Add the vRealize Log Insight Virtual Machines to the First Availability Zone VM Group"
+                # Add the VMware Aria Operations for Logs Virtual Machines to the First Availability Zone VM Group
+                Write-LogMessage -Type INFO -Message "Add the VMware Aria Operations for Logs Virtual Machines to the First Availability Zone VM Group"
                 $StatusMsg = Add-VmGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -name $groupName -vmList $vmList -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             }
 
-            # Configure SMTP for vRealize Log Insight
-            Write-LogMessage -Type INFO -Message "Configure SMTP for vRealize Log Insight"
+            # Configure SMTP for VMware Aria Operations for Logs
+            Write-LogMessage -Type INFO -Message "Configure SMTP for VMware Aria Operations for Logs"
             $StatusMsg = Add-vRLISmtpConfiguration -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -smtpServer $smtpServer -port $port -sender $sender -smtpUser $smtpUser -smtpPass $smtpPass -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Configure Log Retention and Archiving for vRealize Log Insight
+            # Configure Log Retention and Archiving for VMware Aria Operations for Logs
             if (!($archiveLocation -match "Value Missing")) {
-                Write-LogMessage -Type INFO -Message "Configure Log Retention and Archiving for vRealize Log Insight"
+                Write-LogMessage -Type INFO -Message "Configure Log Retention and Archiving for VMware Aria Operations for Logs"
                 $StatusMsg = Add-vRLILogArchive -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -emailAddress $emailAddress -retentionNotificationDays $retentionNotificationDays -retentionInterval weeks -retentionPeriodDays $retentionPeriodDays -archiveLocation $archiveLocation -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             }
             
-            # Enable Authentication for vRealize Log Insight by Using Workspace ONE Access
-            Write-LogMessage -Type INFO -Message "Enable Authentication for vRealize Log Insight by Using Workspace ONE Access"
+            # Enable Authentication for VMware Aria Operations for Logs by Using Workspace ONE Access
+            Write-LogMessage -Type INFO -Message "Enable Authentication for VMware Aria Operations for Logs by Using Workspace ONE Access"
             $StatusMsg = Add-vRLIAuthenticationWSA -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -wsaFqdn $wsaFqdn -wsaUser $wsaUser -wsaPass $wsaPass -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
@@ -180,8 +180,8 @@ Try {
             $StatusMsg = Add-WorkspaceOneDirectoryGroup -server $wsaFqdn -user $wsaUser -pass $wsaPass -domain $domain -bindUser $bindUser -bindPass $bindPass -baseDnGroup $baseDnGroup -adGroups $adGroups -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             
-            # Assign vRealize Log Insight Roles to Active Directory Groups
-            Write-LogMessage -Type INFO -Message "Assign vRealize Log Insight Roles to Active Directory Groups"
+            # Assign VMware Aria Operations for Logs Roles to Active Directory Groups
+            Write-LogMessage -Type INFO -Message "Assign VMware Aria Operations for Logs Roles to Active Directory Groups"
             $StatusMsg = Add-vRLIAuthenticationGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domain -group $vrliAdminGroup -role 'Super Admin' -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-vRLIAuthenticationGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $domain -group $vrliUserGroup -role 'User' -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg

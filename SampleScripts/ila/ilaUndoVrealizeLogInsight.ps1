@@ -88,10 +88,10 @@ Try {
             $vrliFolder                 = $pnpWorkbook.Workbook.Names["region_vrli_vm_folder"].Value
             $passwordAlias              = $pnpWorkbook.Workbook.Names["region_vrli_admin_password_alias"].Value
             $certificateAlias           = $pnpWorkbook.Workbook.Names["region_vrli_virtual_hostname"].Value
-            $licenseAlias               =  "vRealize Log Insight"
+            $licenseAlias               =  "VMware Aria Operations for Logs"
 
-            # Remove the vRealize Log Insight Agent on the Clustered Workspace ONE Access Nodes
-            Write-LogMessage -Type INFO -Message "Attempting to Remove the vRealize Log Insight Agent on the Clustered Workspace ONE Access Nodes"
+            # Remove the VMware Aria Operations for Logs Agent on the Clustered Workspace ONE Access Nodes
+            Write-LogMessage -Type INFO -Message "Attempting to Remove the VMware Aria Operations for Logs Agent on the Clustered Workspace ONE Access Nodes"
             $StatusMsg = Undo-vRLIPhotonAgent -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -vmName $vmNameNode1 -vmRootPass $vmRootPass -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Undo-vRLIPhotonAgent -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -vmName $vmNameNode2 -vmRootPass $vmRootPass -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
@@ -99,57 +99,57 @@ Try {
             $StatusMsg = Undo-vRLIPhotonAgent -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -vmName $vmNameNode3 -vmRootPass $vmRootPass -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Remove the vRealize Log Insight Configuration from the NSX Edge Nodes
-            Write-LogMessage -Type INFO -Message "Attempting to Remove the vRealize Log Insight Configuration from the NSX Edge Nodes"
+            # Remove the VMware Aria Operations for Logs Configuration from the NSX Edge Nodes
+            Write-LogMessage -Type INFO -Message "Attempting to Remove the VMware Aria Operations for Logs Configuration from the NSX Edge Nodes"
             $StatusMsg = Undo-NsxtNodeProfileSyslogExporter -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Undo-NsxtNodeProfileSyslogExporter -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Disconnect a VI Workload Domain from vRealize Log Insight
-            Write-LogMessage -Type INFO -Message "Attempt to Disconnect a VI Workload Domain from vRealize Log Insight"
+            # Disconnect a VI Workload Domain from VMware Aria Operations for Logs
+            Write-LogMessage -Type INFO -Message "Attempt to Disconnect a VI Workload Domain from VMware Aria Operations for Logs"
             $StatusMsg = Register-vRLIWorkloadDomain -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -status DISABLED -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Remove vRelize Log Insight Active Directory Groups from Workspace ONE Access
-            Write-LogMessage -Type INFO -Message "Attempting to Remove vRelize Log Insight Active Directory Groups from Workspace ONE Access"
+            # Remove VMware Aria Operations for LogsActive Directory Groups from Workspace ONE Access
+            Write-LogMessage -Type INFO -Message "Attempting to Remove VMware Aria Operations for LogsActive Directory Groups from Workspace ONE Access"
             $StatusMsg = Undo-WorkspaceOneDirectoryGroup -server $wsaFqdn -user $wsaUser -pass $wsaPass -domain $domain -bindUser $bindUser -bindPass $bindPass -baseDnGroup $baseDnGroup -adGroups $adGroups -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Delete vRealize Log Insight from vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Attempting to Delete vRealize Log Insight from vRealize Suite Lifecycle Manager"
+            # Delete VMware Aria Operations for Logs from VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Attempting to Delete VMware Aria Operations for Logs from VMware Aria Suite Lifecycle"
             $StatusMsg = Undo-vRLIDeployment -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -environmentName $environemntName -monitor -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             
-            # Delete the VM Group and Start Up Rule for the vRealize Log Insight Cluster
-            Write-LogMessage -Type INFO -Message "Attempting to Delete the VM Group and Start Up Rule for the vRealize Log Insight Cluster"
+            # Delete the VM Group and Start Up Rule for the VMware Aria Operations for Logs Cluster
+            Write-LogMessage -Type INFO -Message "Attempting to Delete the VM Group and Start Up Rule for the VMware Aria Operations for Logs Cluster"
             $StatusMsg = Undo-VmStartupRule -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $ruleName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Undo-ClusterGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -drsGroupName $drsGroupNameVrli -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             
-            # Delete the vSphere DRS Anti-Affinity Rule for vRealize Log Insight
-            Write-LogMessage -Type INFO -Message "Attempting to Delete the vSphere DRS Anti-Affinity Rule for vRealize Log Insight"
+            # Delete the vSphere DRS Anti-Affinity Rule for VMware Aria Operations for Logs
+            Write-LogMessage -Type INFO -Message "Attempting to Delete the vSphere DRS Anti-Affinity Rule for VMware Aria Operations for Logs"
             $StatusMsg = Undo-AntiAffinityRule -server  $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -ruleName $antiAffinityRuleName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Delete the Virtual Machine and Template Folder for vRealize Log Insight
-            Write-LogMessage -Type INFO -Message "Attempting Delete the Virtual Machine and Template Folder for vRealize Log Insight"
+            # Delete the Virtual Machine and Template Folder for VMware Aria Operations for Logs
+            Write-LogMessage -Type INFO -Message "Attempting Delete the Virtual Machine and Template Folder for VMware Aria Operations for Logs"
             $StatusMsg = Undo-VMFolder -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -foldername $vrliFolder -folderType VM -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Delete the vRealize Log Insight Admin Password from vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Attempted to Delete the vRealize Log Insight Admin Password from vRealize Suite Lifecycle Manager"
+            # Delete the VMware Aria Operations for Logs Admin Password from VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Attempted to Delete the VMware Aria Operations for Logs Admin Password from VMware Aria Suite Lifecycle"
             $StatusMsg = Undo-vRSLCMLockerPassword -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $passwordAlias -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Delete the vRealize Log Insight Certificate from vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Attempting to Delete the vRealize Log Insight Certificate from vRealize Suite Lifecycle Manager"
+            # Delete the VMware Aria Operations for Logs Certificate from VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Attempting to Delete the VMware Aria Operations for Logs Certificate from VMware Aria Suite Lifecycle"
             $StatusMsg = Undo-vRSLCMLockerCertificate -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -certificateAlias $certificateAlias -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Delete vRealize Log Insight License from vRealize Suite Lifecycle Manager
-            Write-LogMessage -Type INFO -Message "Attempting to Delete vRealize Log Insight License from vRealize Suite Lifecycle Manager"
+            # Delete VMware Aria Operations for Logs License from VMware Aria Suite Lifecycle
+            Write-LogMessage -Type INFO -Message "Attempting to Delete VMware Aria Operations for Logs License from VMware Aria Suite Lifecycle"
             $StatusMsg = Undo-vRSLCMLockerLicense -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -alias $licenseAlias -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
         }

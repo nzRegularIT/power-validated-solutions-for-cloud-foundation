@@ -64,19 +64,19 @@ Try {
             $vrliIpList                         = $pnpWorkbook.Workbook.Names["region_vrli_virtual_ip"].Value + "," + $pnpWorkbook.Workbook.Names["region_vrli_nodea_ip"].Value + "," + $pnpWorkbook.Workbook.Names["region_vrli_nodeb_ip"].Value + "," + $pnpWorkbook.Workbook.Names["region_vrli_nodec_ip"].Value
 
             if ((Get-VCFvROPS).status -eq "ACTIVE") {
-                Write-LogMessage -Type INFO -Message "Configure Integration with vRealize Operations Manager" -Colour Green
+                Write-LogMessage -Type INFO -Message "Configure Integration with VMware Aria Operations" -Colour Green
 
-                # Reconfigure the Remote Collector Group for the vRealize Log Insight Integration
-                Write-LogMessage -Type INFO -Message "Attempting to Reconfigure the Remote Collector Group for the vRealize Log Insight Integration"
+                # Reconfigure the Remote Collector Group for the VMware Aria Operations for Logs Integration
+                Write-LogMessage -Type INFO -Message "Attempting to Reconfigure the Remote Collector Group for the VMware Aria Operations for Logs Integration"
                 $StatusMsg = Update-vROPSAdapterCollecterGroup -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -collectorGroupName $remoteCollectorGroup -adapterType "LogInsightAdapter" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
                 
-                # Add a Ping Adapter for the vRealize Log Insight Cluster
-                Write-LogMessage -Type INFO -Message "Attempting to Add a Ping Adapter for the vRealize Log Insight Cluster"
+                # Add a Ping Adapter for the VMware Aria Operations for Logs Cluster
+                Write-LogMessage -Type INFO -Message "Attempting to Add a Ping Adapter for the VMware Aria Operations for Logs Cluster"
                 $StatusMsg = Add-vROPSAdapterPing -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -addressList $vrliIpList -adapterName $vrliAdapterName -collectorGroupName $remoteCollectorGroup -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
                 if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             } else {
-                Write-LogMessage -Type INFO -Message "Configure Integration with vRealize Operations Manager, Not Installed: SKIPPED" -Colour Cyan
+                Write-LogMessage -Type INFO -Message "Configure Integration with VMware Aria Operations, Not Installed: SKIPPED" -Colour Cyan
             }
         }
     }

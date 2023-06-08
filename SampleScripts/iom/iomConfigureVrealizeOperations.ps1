@@ -12,15 +12,15 @@
 
     ===================================================================================================================
     .SYNOPSIS
-    Configure Integration of vRealize Operations Manager for Intelligent Operations Management
+    Configure Integration of VMware Aria Operations for Intelligent Operations Management
 
     .DESCRIPTION
-    The iomConfigureVrealizeOperations.ps1 provides a single script to configure the intergration of vRealize Operations Manager
+    The iomConfigureVrealizeOperations.ps1 provides a single script to configure the integration of VMware Aria Operations
     as defined by the Intelligent Operations Management Validated Solution
 
     .EXAMPLE
     iomConfigureVrealizeOperations.ps1 -sddcManagerFqdn sfo-vcf01.sfo.rainpole.io -sddcManagerUser administrator@vsphere.local -sddcManagerPass VMw@re1! -workbook F:\vvs\PnP.xlsx -filePath F:\vvs
-    This example performs the deployment and configure of vRealize Operations Manager using the parameters provided within the Planning and Preparation Workbook
+    This example performs the deployment and configure of VMware Aria Operations using the parameters provided within the Planning and Preparation Workbook
 #>
 
 Param (
@@ -34,7 +34,7 @@ Param (
 Clear-Host; Write-Host ""
 
 Start-SetupLogFile -Path $filePath -ScriptName $MyInvocation.MyCommand.Name
-Write-LogMessage -Type INFO -Message "Starting the Process of Integration Configuration of vRealize Operations Manager Based on Intelligent Operations Management for VMware Cloud Foundation" -Colour Yellow
+Write-LogMessage -Type INFO -Message "Starting the Process of Integration Configuration of VMware Aria Operations Based on Intelligent Operations Management for VMware Cloud Foundation" -Colour Yellow
 Write-LogMessage -Type INFO -Message "Setting up the log file to path $logfile"
 
 Try {
@@ -69,55 +69,55 @@ Try {
             $vropsrcIpList                          = $pnpWorkbook.Workbook.Names["region_vropsca_ip"].Value + "," + $pnpWorkbook.Workbook.Names["region_vropscb_ip"].Value
             $vropsrcAdapterName                     = $collectorGroupName
 
-            $csvFile                                = "vrops-vcf-notifications.csv"
+            $csvFile                                = "operations-vcf-notifications.csv"
             if (!(Test-Path ($filePath + "\" + $csvFile) )) { Write-LogMessage -Type ERROR -Message "Unable to Find Notification CSV File: $csvFile, check details and try again" -Colour Red; Break } else { Write-LogMessage -Type INFO -Message "Found Notification CSV File: $csvFile" }
 
-            # Connect vRealize Operations Manager to the VI Workload Domains in the First VMware Cloud Foundation Instance
-            Write-LogMessage -Type INFO -Message "Connect vRealize Operations Manager to the VI Workload Domains in the First VMware Cloud Foundation Instance"
+            # Connect VMware Aria Operations to the VI Workload Domains in the First VMware Cloud Foundation Instance
+            Write-LogMessage -Type INFO -Message "Connect VMware Aria Operations to the VI Workload Domains in the First VMware Cloud Foundation Instance"
             $StatusMsg = Register-vROPSWorkloadDomain -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -status ENABLED -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Modify the vCenter Server Adapters for the First VMware Cloud Foundation Instance in vRealize Operations Manager
-            Write-LogMessage -Type INFO -Message "Modify the vCenter Server Adapters for the First VMware Cloud Foundation Instance in vRealize Operations Manager"
+            # Modify the vCenter Server Adapters for the First VMware Cloud Foundation Instance in VMware Aria Operations
+            Write-LogMessage -Type INFO -Message "Modify the vCenter Server Adapters for the First VMware Cloud Foundation Instance in VMware Aria Operations"
             $StatusMsg = Update-vROPSAdapterVcenter -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -collectorGroupName $collectorGroupName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "Modifing the vCenter Server Adapters for the First VMware Cloud Foundation Instance: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message "Modifing the vCenter Server Adapters for the First VMware Cloud Foundation Instance, already modifed: SKIPPED" -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Add NSX-T Data Center Adapters in vRealize Operations Manager
-            Write-LogMessage -Type INFO -Message "Add NSX-T Data Center Adapters in vRealize Operations Manager"
+            # Add NSX-T Data Center Adapters in VMware Aria Operations
+            Write-LogMessage -Type INFO -Message "Add NSX-T Data Center Adapters in VMware Aria Operations"
             $StatusMsg = Add-vROPSAdapterNsxt -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcDomainName -collectorGroupName $collectorGroupName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-vROPSAdapterNsxt -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -domain $sddcWldDomainName -collectorGroupName $collectorGroupName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Install the SDDC Health Monitoring Solution in vRealize Operations Manager
-            Write-LogMessage -Type INFO -Message "Install the SDDC Health Monitoring Solution in vRealize Operations Manager"
+            # Install the SDDC Health Monitoring Solution in VMware Aria Operations
+            Write-LogMessage -Type INFO -Message "Install the SDDC Health Monitoring Solution in VMware Aria Operations"
             $StatusMsg = Enable-vROPSManagementPack -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPAss -packType "SDDC Health" -pakFile "F:\vvs\vmware-mpforsddchealth-8-1619468209785.pak" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Rename the SDDC Health Adapters for the vRealize Operations Manager Analytics Cluster Nodes
-            Write-LogMessage -Type INFO -Message "Rename the SDDC Health Adapters for the vRealize Operations Manager Analytics Cluster Nodes"
+            # Rename the SDDC Health Adapters for the VMware Aria Operations Analytics Cluster Nodes
+            Write-LogMessage -Type INFO -Message "Rename the SDDC Health Adapters for the VMware Aria Operations Analytics Cluster Nodes"
             $StatusMsg = Update-vROPSAdapterSddcHealth -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
-            if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "Renaming the SDDC Health Adapters for the vRealize Operations Manager: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message "Renaming the SDDC Health Adapters for the vRealize Operations Manager, already performed: SKIPPED" -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
+            if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "Renaming the SDDC Health Adapters for the VMware Aria Operations: SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message "Renaming the SDDC Health Adapters for the VMware Aria Operations, already performed: SKIPPED" -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Add SDDC Health Adapters for the vRealize Operations Manager Remote Collector Nodes
-            Write-LogMessage -Type INFO -Message "Add SDDC Health Adapters for the vRealize Operations Manager Remote Collector Nodes"
+            # Add SDDC Health Adapters for the VMware Aria Operations Remote Collector Nodes
+            Write-LogMessage -Type INFO -Message "Add SDDC Health Adapters for the VMware Aria Operations Remote Collector Nodes"
             $StatusMsg = Add-vROPSAdapterSddcHealth -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
-            if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "Adding Adapter (SDDC Health Adapter Instance) for Remore Collectors to vRealize Operations Manager (xint-vrops01.rainpole.io): SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message "Adding Adapter (SDDC Health Adapter Instance) for Remore Collectors to vRealize Operations Manager (xint-vrops01.rainpole.io), already performed: SKIPPED" -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
+            if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "Adding Adapter (SDDC Health Adapter Instance) for Remore Collectors to VMware Aria Operations (xint-vrops01.rainpole.io): SUCCESSFUL" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message "Adding Adapter (SDDC Health Adapter Instance) for Remore Collectors to VMware Aria Operations (xint-vrops01.rainpole.io), already performed: SKIPPED" -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Activate the Ping Management Pack in vRealize Operations Manager
-            Write-LogMessage -Type INFO -Message "Activate the Ping Management Pack in vRealize Operations Manager"
+            # Activate the Ping Management Pack in VMware Aria Operations
+            Write-LogMessage -Type INFO -Message "Activate the Ping Management Pack in VMware Aria Operations"
             $StatusMsg = Register-vROPSManagementPack -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -state enable -packType Ping -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
 
-            # Add Ping Adapters for the vRealize Operations Manager Nodes
-            Write-LogMessage -Type INFO -Message "Add Ping Adapters for the vRealize Operations Manager Nodes"
+            # Add Ping Adapters for the VMware Aria Operations Nodes
+            Write-LogMessage -Type INFO -Message "Add Ping Adapters for the VMware Aria Operations Nodes"
             $StatusMsg = Add-vROPSAdapterPing -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -addressList $vropsIpList -adapterName $vropsAdapterName -collectorGroupName $defaultCollectorGroup -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
             $StatusMsg = Add-vROPSAdapterPing -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -addressList $vropsrcIpList -adapterName $vropsrcAdapterName -collectorGroupName $collectorGroupName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
     
-            # Create Notifications in vRealize Operations Manager for VMware Cloud Foundation Issues
-            Write-LogMessage -Type INFO -Message "Create Notifications in vRealize Operations Manager for VMware Cloud Foundation Issues"
+            # Create Notifications in VMware Aria Operations for VMware Cloud Foundation Issues
+            Write-LogMessage -Type INFO -Message "Create Notifications in VMware Aria Operations for VMware Cloud Foundation Issues"
             $StatusMsg = Import-vROPSNotification -server $sddcManagerFqdn -user $sddcManagerUser -pass $sddcManagerPass -csvPath ($filePath + "\" + $csvFile) -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -WarningVariable WarnMsg -ErrorVariable ErrorMsg
             if ( $StatusMsg ) { Write-LogMessage -Type INFO -Message "$StatusMsg" } if ( $WarnMsg ) { Write-LogMessage -Type WARNING -Message $WarnMsg -Colour Magenta } if ( $ErrorMsg ) { Write-LogMessage -Type ERROR -Message $ErrorMsg -Colour Red }
         }
