@@ -32468,7 +32468,7 @@ Function Test-vRSLCMConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if if ( Test-EndpointConnection -server $server -port 443 ) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $vrslcmConnection = $True
         Return $vrslcmConnection
     }   
@@ -32644,7 +32644,7 @@ Function Test-WSAConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if if ( Test-EndpointConnection -server $server -port 443 ) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $wsaConnection = $True
         Return $wsaConnection
     }   
@@ -32688,7 +32688,7 @@ Function Test-VrmsVamiConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if if ( Test-EndpointConnection -server $server -port 443 ) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $vrmsVamiConnection = $True
         Return $vrmsVamiConnection
     }   
