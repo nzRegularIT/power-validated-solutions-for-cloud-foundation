@@ -32292,7 +32292,7 @@ Function Test-VsphereConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $vsphereConnection = $True
         Return $vsphereConnection
     }   
@@ -32334,7 +32334,7 @@ Function Test-SSOConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $ssoConnection = $True
         Return $ssoConnection
     }   
@@ -32376,7 +32376,7 @@ Function Test-vSphereApiConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $vSphereApiConnection = $True
         Return $vSphereApiConnection
     }   
@@ -32424,7 +32424,7 @@ Function Test-NSXTConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $nsxtConnection = $True
         Return $nsxtConnection
     }   
@@ -32468,7 +32468,7 @@ Function Test-vRSLCMConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if if ( Test-EndpointConnection -server $server -port 443 ) {
         $vrslcmConnection = $True
         Return $vrslcmConnection
     }   
@@ -32512,7 +32512,7 @@ Function Test-vROPSConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $vropsConnection = $True
         Return $vropsConnection
     }   
@@ -32556,7 +32556,7 @@ Function Test-vRLIConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $vrliConnection = $True
         Return $vrliConnection
     }   
@@ -32600,7 +32600,7 @@ Function Test-vRAConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $vraConnection = $True
         Return $vraConnection
     }   
@@ -32644,7 +32644,7 @@ Function Test-WSAConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if if ( Test-EndpointConnection -server $server -port 443 ) {
         $wsaConnection = $True
         Return $wsaConnection
     }   
@@ -32688,7 +32688,7 @@ Function Test-VrmsVamiConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if if ( Test-EndpointConnection -server $server -port 443 ) {
         $vrmsVamiConnection = $True
         Return $vrmsVamiConnection
     }   
@@ -32732,7 +32732,7 @@ Function Test-SrmVamiConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $srmVamiConnection = $True
         Return $srmVamiConnection
     }   
@@ -32776,7 +32776,7 @@ Function Test-SRMConnection {
         [Parameter (Mandatory=$true)] [ValidateNotNullOrEmpty()] [String]$server
     )
 
-    if (Test-Connection -ComputerName ($server) -Quiet -Count 1) {
+    if ( Test-EndpointConnection -server $server -port 443 ) {
         $srmConnection = $True
         Return $srmConnection
     }   
